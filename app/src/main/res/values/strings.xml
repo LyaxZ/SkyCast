@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Demo</string>
+    <string name="hello_world">Hello World!</string>
+    <string name="ni_hao">你好</string>
+    <string name="counter_zero">0</string>
+    <string name="button_text">点击计数</string>
+</resources>
