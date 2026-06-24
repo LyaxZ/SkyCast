@@ -7,4 +7,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- 柔和背景 -->
+    <color name="background_light">#FFF5F0FF</color>
+    <!-- 浅紫色卡片 -->
+    <color name="card_purple">#FFF0E6FF</color>
+    <!-- 深紫色文字 -->
+    <color name="text_dark_purple">#FF4A148C</color>
+    <!-- 灰色文字 -->
+    <color name="text_gray">#FF6A6A6A</color>
+    <!-- 紫色边框 -->
+    <color name="border_purple">#FFD1C4E9</color>
+    <!-- 按钮紫色 -->
+    <color name="button_purple">#FF7C4DFF</color>
 </resources>
