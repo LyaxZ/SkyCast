@@ -1,9 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
+
+// 从 local.properties 读取 API 凭证（不提交到 Git）
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localProps.load(localPropsFile.inputStream())
+}
+val weatherApiId = localProps.getProperty("weather.api.id") ?: ""
+val weatherApiKey = localProps.getProperty("weather.api.key") ?: ""
 
 android {
     namespace = "com.example.skycast"
@@ -18,7 +29,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "WEATHER_API_BASE_URL", "\"https://api.open-meteo.com/\"")
+        buildConfigField("String", "WEATHER_API_BASE_URL", "\"http://81.68.85.14/\"")
+        buildConfigField("String", "WEATHER_API_ID", "\"$weatherApiId\"")
+        buildConfigField("String", "WEATHER_API_KEY", "\"$weatherApiKey\"")
     }
 
     buildTypes {
