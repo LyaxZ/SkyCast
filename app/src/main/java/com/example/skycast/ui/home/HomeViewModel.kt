@@ -3,7 +3,7 @@ package com.example.skycast.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skycast.data.location.LocationClient
-import com.example.skycast.data.model.WeatherResponse
+import com.example.skycast.data.model.CombinedWeather
 import com.example.skycast.data.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,10 +15,9 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val isLoading: Boolean = false,
-    val weather: WeatherResponse? = null,
-    val locationName: String = "",
+    val combinedWeather: CombinedWeather? = null,
     val errorMessage: String? = null,
-    /** 定位失败 → 需要用户手动输入城市名 */
+    /** 定位失败 / 权限拒绝 → 弹出城市选择器 */
     val needManualInput: Boolean = false,
 )
 
@@ -42,17 +41,17 @@ class HomeViewModel @Inject constructor(
             val result = locationClient.getCurrentLocation()
             result.fold(
                 onSuccess = { location ->
-                    fetchWeather(
-                        sheng = location.province,
-                        place = location.city,
-                        locationName = "${location.province} ${location.city}",
+                    loadCombinedWeather(
+                        province = location.province,
+                        city = location.city,
+                        displayPlace = "${location.province} ${location.city}",
                     )
                 },
                 onFailure = { e ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = "定位失败：${e.message}，请手动输入城市名",
+                            errorMessage = "定位失败：${e.message}，请选择城市",
                             needManualInput = true,
                         )
                     }
@@ -61,39 +60,54 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /** 权限拒绝时，切换到手动输入模式 */
+    /** 权限拒绝时，切换到城市选择器模式 */
     fun onPermissionDenied() {
         _uiState.update {
             it.copy(
                 isLoading = false,
                 needManualInput = true,
-                errorMessage = "位置权限被拒绝，请手动输入城市名",
+                errorMessage = "位置权限被拒绝，请选择城市",
             )
         }
     }
 
-    /** 手动输入城市名查询 */
-    fun searchByPlace(place: String, sheng: String = "") {
+    /** 从城市选择器选择后调用 */
+    fun selectCity(province: String, city: String, district: String? = null) {
+        val displayPlace = if (district != null) "$province $city $district" else "$province $city"
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            fetchWeather(sheng = sheng, place = place, locationName = place)
+            _uiState.update { it.copy(isLoading = true, errorMessage = null, needManualInput = false) }
+            loadCombinedWeather(
+                province = province,
+                city = city,
+                district = district,
+                displayPlace = displayPlace,
+            )
         }
     }
 
-    private suspend fun fetchWeather(sheng: String, place: String, locationName: String) {
-        weatherRepository.getWeather(sheng = sheng, place = place).collect { result ->
-            result.fold(
-                onSuccess = { weather ->
-                    _uiState.update {
-                        it.copy(isLoading = false, weather = weather, locationName = locationName)
-                    }
-                },
-                onFailure = { e ->
-                    _uiState.update {
-                        it.copy(isLoading = false, errorMessage = "请求天气失败：${e.message}")
-                    }
-                },
-            )
-        }
+    private suspend fun loadCombinedWeather(
+        province: String,
+        city: String,
+        district: String? = null,
+        displayPlace: String,
+    ) {
+        val result = weatherRepository.getCombinedWeather(
+            province = province,
+            city = city,
+            district = district,
+            displayPlace = displayPlace,
+        )
+        result.fold(
+            onSuccess = { combined ->
+                _uiState.update {
+                    it.copy(isLoading = false, combinedWeather = combined)
+                }
+            },
+            onFailure = { e ->
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = "请求天气失败：${e.message}")
+                }
+            },
+        )
     }
 }
