@@ -76,7 +76,7 @@ fun CityPickerDialog(
                             RoundedCornerShape(8.dp),
                         ),
                 ) {
-                    items(provinces) { province ->
+                    items(provinces, key = { it.province }) { province ->
                         val isSelected = selectedProvince?.province == province.province
                         Box(
                             modifier = Modifier
@@ -132,7 +132,7 @@ fun CityPickerDialog(
                             )
                         }
                     }
-                    items(cities) { city ->
+                    items(cities, key = { it.name }) { city ->
                         val isSelected = selectedCityName == city.name
                         Box(
                             modifier = Modifier
@@ -189,7 +189,7 @@ fun CityPickerDialog(
                             )
                         }
                     }
-                    items(districts) { district ->
+                    items(districts, key = { it }) { district ->
                         val isSelected = selectedDistrict == district
                         Box(
                             modifier = Modifier

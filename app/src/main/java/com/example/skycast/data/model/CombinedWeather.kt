@@ -13,4 +13,5 @@ data class CombinedWeather(
     val forecast: List<ForecastDay>?,
     val displayPlace: String,
     val realtimePlace: String,
+    val isFromCache: Boolean = false,
 )

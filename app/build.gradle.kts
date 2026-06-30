@@ -29,7 +29,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "WEATHER_API_BASE_URL", "\"http://81.68.85.14/\"")
+        buildConfigField("String", "WEATHER_API_BASE_URL", "\"https://cn.apihz.cn/\"")
         buildConfigField("String", "WEATHER_API_ID", "\"$weatherApiId\"")
         buildConfigField("String", "WEATHER_API_KEY", "\"$weatherApiKey\"")
     }

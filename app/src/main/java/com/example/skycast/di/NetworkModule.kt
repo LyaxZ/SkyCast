@@ -1,5 +1,6 @@
 package com.example.skycast.di
 
+import com.example.skycast.BuildConfig
 import com.example.skycast.data.remote.WeatherApiService
 import dagger.Module
 import dagger.Provides
@@ -20,7 +21,7 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.HEADERS
         }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
@@ -33,7 +34,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://81.68.85.14/")
+            .baseUrl(BuildConfig.WEATHER_API_BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

@@ -30,11 +30,7 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    init {
-        loadWeatherByLocation()
-    }
-
-    /** 定位 + 请求天气 */
+    /** 定位 + 请求天气（仅在权限已授予时调用） */
     fun loadWeatherByLocation() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null, needManualInput = false) }
